@@ -1,0 +1,6 @@
+framework module Pods_ProfilePageSample {
+  umbrella header "Pods-ProfilePageSample-umbrella.h"
+
+  export *
+  module * { export * }
+}
