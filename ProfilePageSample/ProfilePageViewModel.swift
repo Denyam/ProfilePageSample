@@ -17,16 +17,14 @@ class ProfilePageViewModel {
 	private(set) var profile: Profile? = nil
 	private(set) var profileImage: UIImage? = nil
 	private(set) var cards: [Card]? = nil
-	private lazy var disposeBag = DisposeBag()
+	private let disposeBag = DisposeBag()
 	
 	func observeProfile() -> Observable<Profile> {
+		if let profile = self.profile {
+			return Observable.just(profile)
+		}
+		
 		return Observable.create { observer in
-			if let profile = self.profile {
-				observer.on(.next(profile))
-				observer.on(.completed)
-				return Disposables.create()
-			}
-			
 			let request = Alamofire.request(self.profileRequestUrl)
 			request.validate().responseData { [weak self] response in
 				if let data = response.result.value {
@@ -51,13 +49,11 @@ class ProfilePageViewModel {
 	}
 	
 	func observeAvatarImage() -> Observable<UIImage> {
+		if let profileImage = self.profileImage {
+			return Observable.just(profileImage)
+		}
+		
 		return Observable.create {[weak self] observer in
-			if let profileImage = self?.profileImage {
-				observer.on(.next(profileImage))
-				observer.on(.completed)
-				return Disposables.create()
-			}
-			
 			func requestAvatar(url: URLConvertible) -> DataRequest {
 				let request = Alamofire.request(url)
 				
@@ -83,7 +79,7 @@ class ProfilePageViewModel {
 				request = requestAvatar(url: avatarUrl)
 			} else {
 				let disposeBag = DisposeBag()
-				_ = self?.observeProfile().share(replay: 1)
+				self?.observeProfile().share(replay: 1)
 					.subscribe(onNext: { profile in
 						request = requestAvatar(url: profile.avatarUrl)
 				})
@@ -97,13 +93,11 @@ class ProfilePageViewModel {
 	}
 	
 	func observeCards() -> Observable<[Card]> {
-		return Observable.create { observer in
-			if let cards = self.cards {
-				observer.on(.next(cards))
-				observer.on(.completed)
-				return Disposables.create()
-			}
+		if let cards = self.cards {
+			return Observable.just(cards)
+		}
 			
+		return Observable.create { observer in
 			let request = Alamofire.request(self.cardsRequestUrl)
 			request.validate().responseData {[weak self] response in
 				if let data = response.result.value {
@@ -127,6 +121,36 @@ class ProfilePageViewModel {
 
 			return Disposables.create {
 				request.cancel()
+			}
+		}
+	}
+	
+	func cardImages() -> Observable<Card> {
+		return Observable.create { observer in
+			var cardRequests = [DataRequest]()
+			self.observeCards().share(replay: 1)
+				.subscribe(onNext: {cards in
+					for card in cards {
+						let request = Alamofire.request(card.imageUrl)
+						cardRequests.append(request)
+						
+						request.validate().responseData { response in
+							if let data = response.result.value {
+								if let image = UIImage(data: data) {
+									card.image = image
+									observer.on(.next(card))
+								} else {
+									observer.on(.error(NSError(domain: "ProfilePageViewModel", code: -1, userInfo: nil)))
+								}
+							} else {
+								observer.on(.error(response.error ?? RxCocoaURLError.unknown))
+							}
+						}
+					}
+			}).disposed(by: self.disposeBag)
+			
+			return Disposables.create {
+				cardRequests.forEach { $0.cancel() }
 			}
 		}
 	}
