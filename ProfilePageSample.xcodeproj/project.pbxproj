@@ -10,6 +10,7 @@
 		3945B38621824CB600D6FDDE /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3945B38521824CB600D6FDDE /* Profile.swift */; };
 		397C64932184A69D00E8EFB3 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397C64922184A69D00E8EFB3 /* SettingsViewController.swift */; };
 		397C64952184AD6D00E8EFB3 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397C64942184AD6D00E8EFB3 /* Card.swift */; };
+		397C64972184D16600E8EFB3 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397C64962184D16500E8EFB3 /* CardCollectionViewCell.swift */; };
 		39BA94B421820FD4000A00B2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BA94B321820FD4000A00B2 /* AppDelegate.swift */; };
 		39BA94B621820FD4000A00B2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BA94B521820FD4000A00B2 /* ViewController.swift */; };
 		39BA94B921820FD4000A00B2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 39BA94B721820FD4000A00B2 /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 		3945B38521824CB600D6FDDE /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		397C64922184A69D00E8EFB3 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		397C64942184AD6D00E8EFB3 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		397C64962184D16500E8EFB3 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		39BA94B021820FD4000A00B2 /* ProfilePageSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProfilePageSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		39BA94B321820FD4000A00B2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		39BA94B521820FD4000A00B2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -72,13 +74,14 @@
 				39BA94B321820FD4000A00B2 /* AppDelegate.swift */,
 				39BA94B521820FD4000A00B2 /* ViewController.swift */,
 				397C64922184A69D00E8EFB3 /* SettingsViewController.swift */,
+				397C64962184D16500E8EFB3 /* CardCollectionViewCell.swift */,
 				39BA94B721820FD4000A00B2 /* Main.storyboard */,
 				39BA94BA21820FD4000A00B2 /* Assets.xcassets */,
 				39BA94BC21820FD4000A00B2 /* LaunchScreen.storyboard */,
 				39BA94BF21820FD4000A00B2 /* Info.plist */,
 				3945B38521824CB600D6FDDE /* Profile.swift */,
-				39E2AA6C218492D200789019 /* ProfilePageViewModel.swift */,
 				397C64942184AD6D00E8EFB3 /* Card.swift */,
+				39E2AA6C218492D200789019 /* ProfilePageViewModel.swift */,
 			);
 			path = ProfilePageSample;
 			sourceTree = "<group>";
@@ -221,6 +224,7 @@
 				397C64952184AD6D00E8EFB3 /* Card.swift in Sources */,
 				3945B38621824CB600D6FDDE /* Profile.swift in Sources */,
 				39BA94B421820FD4000A00B2 /* AppDelegate.swift in Sources */,
+				397C64972184D16600E8EFB3 /* CardCollectionViewCell.swift in Sources */,
 				397C64932184A69D00E8EFB3 /* SettingsViewController.swift in Sources */,
 				39E2AA6D218492D200789019 /* ProfilePageViewModel.swift in Sources */,
 			);
