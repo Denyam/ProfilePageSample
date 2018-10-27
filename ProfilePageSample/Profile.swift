@@ -6,10 +6,6 @@
 //  Copyright © 2018 Denis. All rights reserved.
 //
 
-import Alamofire
-import RxSwift
-import RxCocoa
-
 class Profile : Decodable {
 	let firstName: String
 	let lastName: String
