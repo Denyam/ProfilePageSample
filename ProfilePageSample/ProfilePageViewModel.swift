@@ -6,16 +6,17 @@
 //  Copyright © 2018 Denis. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 import RxCocoa
 import Alamofire
 
 class ProfilePageViewModel {
 	private let profileRequestUrl = "https://s3-ap-southeast-2.amazonaws.com/openpay-mobile-test/profile.json"
+	private let cardsRequestUrl = "https://s3-ap-southeast-2.amazonaws.com/openpay-mobile-test/cards.json"
 
 	private(set) var profile: Profile? = nil
 	private(set) var profileImage: UIImage? = nil
+	private(set) var cards: [Card]? = nil
 	private lazy var disposeBag = DisposeBag()
 	
 	func observeProfile() -> Observable<Profile> {
@@ -91,6 +92,41 @@ class ProfilePageViewModel {
 			
 			return Disposables.create {
 				request?.cancel()
+			}
+		}
+	}
+	
+	func observeCards() -> Observable<[Card]> {
+		return Observable.create { observer in
+			if let cards = self.cards {
+				observer.on(.next(cards))
+				observer.on(.completed)
+				return Disposables.create()
+			}
+			
+			let request = Alamofire.request(self.cardsRequestUrl)
+			request.validate().responseData {[weak self] response in
+				if let data = response.result.value {
+					let decoder = JSONDecoder()
+					do {
+						struct CardsData : Decodable {
+							var cards: [Card]
+						}
+						
+						let cardsData = try decoder.decode(CardsData.self, from: data)
+						self?.cards = cardsData.cards
+						observer.on(.next(cardsData.cards))
+						observer.on(.completed)
+					} catch {
+						observer.on(.error(error))
+					}
+				} else {
+					observer.on(.error(response.error ?? RxCocoaURLError.unknown))
+				}
+			}
+
+			return Disposables.create {
+				request.cancel()
 			}
 		}
 	}
