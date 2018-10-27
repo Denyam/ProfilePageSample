@@ -48,4 +48,50 @@ class ProfilePageViewModel {
 			}
 		}
 	}
+	
+	func observeAvatarImage() -> Observable<UIImage> {
+		return Observable.create {[weak self] observer in
+			if let profileImage = self?.profileImage {
+				observer.on(.next(profileImage))
+				observer.on(.completed)
+				return Disposables.create()
+			}
+			
+			func requestAvatar(url: URLConvertible) -> DataRequest {
+				let request = Alamofire.request(url)
+				
+				request.validate().responseData {[weak self] response in
+					if let data = response.result.value {
+						if let image = UIImage(data: data) {
+							self?.profileImage = image
+							observer.on(.next(image))
+							observer.on(.completed)
+						} else {
+							observer.on(.error(NSError(domain: "ProfilePageViewModel", code: -1, userInfo: nil)))
+						}
+					} else {
+						observer.on(.error(response.error ?? RxCocoaURLError.unknown))
+					}
+				}
+				
+				return request
+			}
+			
+			var request: DataRequest? = nil
+			if let avatarUrl = self?.profile?.avatarUrl {
+				request = requestAvatar(url: avatarUrl)
+			} else {
+				let disposeBag = DisposeBag()
+				_ = self?.observeProfile().share(replay: 1)
+					.subscribe(onNext: { profile in
+						request = requestAvatar(url: profile.avatarUrl)
+				})
+					.disposed(by: self?.disposeBag ?? disposeBag)
+			}
+			
+			return Disposables.create {
+				request?.cancel()
+			}
+		}
+	}
 }
