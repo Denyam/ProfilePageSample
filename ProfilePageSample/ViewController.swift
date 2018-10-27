@@ -80,6 +80,10 @@ class ViewController: UIViewController {
 		
 		settingsButton = UIButton(type: .custom)
 		settingsButton.setImage(UIImage(named: "settings"), for: .normal)
+		_ = settingsButton.rx.tap.takeUntil(self.rx.deallocated)
+			.subscribe(onNext: {[weak self] in
+			self?.onSettingsTap()
+		})
 		
 		let mobileButton = UIButton(type: .custom)
 		mobileButton.setImage(UIImage(named: "mobile"), for: .normal)
@@ -105,7 +109,11 @@ class ViewController: UIViewController {
 		self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-\(pictureTopOffset)-[pictureImageView(==\(pictureDimension))]", metrics: nil, views: viewsDictionary))
 		self.view.addConstraint(NSLayoutConstraint(item: settingsButton, attribute: .centerY, relatedBy: .equal, toItem: mobileButton, attribute: .centerY, multiplier: 1, constant: 0))
 	}
-		
+	
+	func onSettingsTap() {
+		self.present(SettingsViewController(), animated: true, completion: nil)
+	}
+	
 	func fillProfile() {
 		if let profile = self.viewModel.profile {
 			self.nameLabel.text = "\(profile.firstName) \(profile.lastName)"
