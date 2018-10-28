@@ -62,18 +62,7 @@ class ViewController: UIViewController {
 			.share(replay: 1)
 			.takeUntil(self.rx.deallocated)
 			.bind(to: cardsCollectionView.rx.items(cellIdentifier: cardCellIdentifier, cellType: CardCollectionViewCell.self)) { [weak self] index, card, cell in
-				guard self != nil else {
-					return
-				}
-				
-				_ = self!.viewModel.cardImage(card: card).takeUntil(self!.rx.deallocated)
-					.subscribe(onNext: { image in
-						cell.setImage(image: image)
-					})
-				if !self!.defaultCellSelected && card.isDefault {
-					self!.defaultCellSelected = true
-					self!.cardsCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
-				}
+				self?.setupCell(index: index, card: card, cell: cell)
 		}
 	}
 
@@ -151,6 +140,18 @@ class ViewController: UIViewController {
 	func fillProfile(_ profile: Profile) {
 		self.nameLabel.text = "\(profile.firstName) \(profile.lastName)"
 		self.cityLabel.text = "\(profile.city), \(profile.country)"
+	}
+	
+	func setupCell(index: Int, card: Card, cell: CardCollectionViewCell) {
+		_ = self.viewModel.cardImage(card: card).takeUntil(self.rx.deallocated)
+			.subscribe(onNext: { image in
+				cell.setImage(image: image)
+			})
+		
+		if !self.defaultCellSelected && card.isDefault {
+			self.defaultCellSelected = true
+			self.cardsCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
+		}
 	}
 }
 
