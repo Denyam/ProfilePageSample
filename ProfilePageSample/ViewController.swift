@@ -62,31 +62,19 @@ class ViewController: UIViewController {
 			.share(replay: 1)
 			.takeUntil(self.rx.deallocated)
 			.bind(to: cardsCollectionView.rx.items(cellIdentifier: cardCellIdentifier, cellType: CardCollectionViewCell.self)) { [weak self] index, card, cell in
-				cell.setImage(image: card.image)
-				if let defaultSelected = self?.defaultCellSelected, !defaultSelected {
-					if card.isDefault {
-						self?.defaultCellSelected = true
-						self?.cardsCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
-					}
+				guard self != nil else {
+					return
+				}
+				
+				_ = self!.viewModel.cardImage(card: card).takeUntil(self!.rx.deallocated)
+					.subscribe(onNext: { image in
+						cell.setImage(image: image)
+					})
+				if !self!.defaultCellSelected && card.isDefault {
+					self!.defaultCellSelected = true
+					self!.cardsCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
 				}
 		}
-		
-		_ = viewModel.cardImages()
-			.takeUntil(self.rx.deallocated)
-			.subscribe(onNext: {[weak self] card in
-				print((self?.viewModel.cards)!)
-				if let index = self?.viewModel.cards?.index(where: { $0 === card }) {
-					let indexPath = IndexPath(item: index, section: 0)
-					if let cell = self?.cardsCollectionView.cellForItem(at: indexPath) as? CardCollectionViewCell {
-						cell.setImage(image: card.image)
-					}
-				}
-			})
-	}
-
-	override func didReceiveMemoryWarning() {
-		super.didReceiveMemoryWarning()
-		// Dispose of any resources that can be recreated.
 	}
 
 	private func buildUI() {

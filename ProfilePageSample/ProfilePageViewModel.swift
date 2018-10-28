@@ -125,32 +125,29 @@ class ProfilePageViewModel {
 		}
 	}
 	
-	func cardImages() -> Observable<Card> {
+	func cardImage(card: Card) -> Observable<UIImage> {
+		if let image = card.image {
+			return Observable.just(image)
+		}
+		
 		return Observable.create { observer in
-			var cardRequests = [DataRequest]()
-			self.observeCards().share(replay: 1)
-				.subscribe(onNext: {cards in
-					for card in cards {
-						let request = Alamofire.request(card.imageUrl)
-						cardRequests.append(request)
-						
-						request.validate().responseData { response in
-							if let data = response.result.value {
-								if let image = UIImage(data: data) {
-									card.image = image
-									observer.on(.next(card))
-								} else {
-									observer.on(.error(NSError(domain: "ProfilePageViewModel", code: -1, userInfo: nil)))
-								}
-							} else {
-								observer.on(.error(response.error ?? RxCocoaURLError.unknown))
-							}
-						}
+			let request = Alamofire.request(card.imageUrl)
+			request.validate().responseData {response in
+				if let data = response.result.value {
+					if let image = UIImage(data: data) {
+						card.image = image
+						observer.on(.next(image))
+						observer.onCompleted()
+					} else {
+						observer.onError(NSError(domain: "ProfilePageViewModel", code: -1, userInfo: nil))
 					}
-			}).disposed(by: self.disposeBag)
+				} else {
+					observer.onError(response.error ?? RxCocoaURLError.unknown)
+				}
+			}
 			
 			return Disposables.create {
-				cardRequests.forEach { $0.cancel() }
+				request.cancel()
 			}
 		}
 	}
